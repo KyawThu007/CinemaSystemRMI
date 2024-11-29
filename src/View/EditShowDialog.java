@@ -1,0 +1,335 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/AWTForms/Panel.java to edit this template
+ */
+package View;
+
+import Controller.ImageUtils;
+import Controller.Service;
+import Model.Movie;
+import Model.Room;
+import Controller.SharedData;
+import Model.Show;
+import java.awt.Image;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
+/**
+ *
+ * @author DELL
+ */
+public class EditShowDialog extends java.awt.Panel {
+
+    /**
+     * Creates new form EditShowPanel
+     */
+    JDialog dialog;
+    int id;
+    int cinema_id, room_id;
+
+    public EditShowDialog(JDialog dialog, int id) {
+        initComponents();
+        this.dialog = dialog;
+        this.id = id;
+
+        // Get the singleton instance
+        SharedData sharedData = SharedData.getInstance();
+
+        // Retrieve and print the data
+        cinema_id = sharedData.getCinema_id();
+
+        try {
+            getAllRoomAction();
+            roomSelected();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        roomBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                roomSelected();
+            }
+
+        });
+
+        viewShowDetail();
+    }
+
+    public void getAllRoomAction() {
+        try {
+            roomBox.removeAll();
+            for (Room room : new Service().getRoomStub().getAllRoom(cinema_id)) {
+                roomBox.addItem(room.getRoom());
+            }
+        } catch (RemoteException e) {
+        }
+    }
+
+    public void roomSelected() {
+        try {
+            List<Room> list = new Service().getRoomStub().getAllRoom(cinema_id);
+            for (Room room : list) {
+                if (room.getRoom().equals(roomBox.getSelectedItem())) {
+                    room_id = room.getId();
+                    break;
+                }
+            }
+        } catch (RemoteException e) {
+        }
+    }
+
+    public void viewShowDetail() {
+        try {
+            Show show = new Service().getShowStub().getShowMovie(id);
+            Movie movie = new Service().getMovieStub().getMovie(show.getMovie_id());
+            try {
+                BufferedImage decodedImage = ImageUtils.decodeBase64ToImage(movie.getImage());
+                Image scaledImage = decodedImage.getScaledInstance(250, 340, Image.SCALE_SMOOTH);
+                ImageIcon imageIcon = new ImageIcon(scaledImage);
+
+                // Update the label with the image
+                imageLabel.setIcon(imageIcon);
+                imageLabel.setText(""); // Clear the text
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            titleField.setText(movie.getTitle());
+            try {
+                startDateChooser.setDateFormatString("yyyy-MM-dd");
+                endDateChooser.setDateFormatString("yyyy-MM-dd");
+
+                startDateChooser.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(show.getStart_date()));
+                endDateChooser.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(show.getEnd_date()));
+            } catch (Exception e) {
+            }
+            timePicker1.setText(show.getTime());
+            Room room = new Service().getRoomStub().getRoom(show.getRoom_id());
+            for (int i = 0; i < roomBox.getItemCount(); i++) {
+                if (roomBox.getModel().getElementAt(i).equals(room.getRoom())) {
+                    roomBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+        } catch (RemoteException e) {
+        }
+    }
+
+    public void updateShowAction() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String startDate = sdf.format(startDateChooser.getDate());
+        String endDate = sdf.format(endDateChooser.getDate());
+        try {
+            Show show = new Show();
+            show.setId(id);
+            show.setStart_date(startDate);
+            show.setEnd_date(endDate);
+            show.setTime(timePicker1.getText());
+            new Service().getShowStub().updateShow(show);
+            dialog.dispose();
+            logMessage("Updated Successful!");
+        } catch (RemoteException e) {
+        }
+    }
+
+    public void logMessage(String log) {
+        JOptionPane.showMessageDialog(null, log, "", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel10 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        imageLabel = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        insertBtn = new javax.swing.JButton();
+        cancelBtn = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        roomBox = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        endDateChooser = new com.toedter.calendar.JDateChooser();
+        startDateChooser = new com.toedter.calendar.JDateChooser();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        timePicker1 = new com.github.lgooddatepicker.components.TimePicker();
+        titleField = new javax.swing.JLabel();
+
+        setLayout(new java.awt.BorderLayout());
+
+        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
+
+        jPanel9.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel9.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        imageLabel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addContainerGap(52, Short.MAX_VALUE)
+                .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(49, 49, 49))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+
+        insertBtn.setText("Update");
+        insertBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                insertBtnActionPerformed(evt);
+            }
+        });
+
+        cancelBtn.setText("Close");
+        cancelBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Room");
+
+        jLabel1.setText("Show Time");
+
+        endDateChooser.setDateFormatString("yyyy-MM-dd");
+
+        startDateChooser.setDateFormatString("yyyy-MM-dd");
+
+        jLabel2.setText("From");
+
+        jLabel3.setText("To");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(100, 100, 100)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(endDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(199, 199, 199))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(insertBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(cancelBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(roomBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(startDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(timePicker1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(startDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addGap(12, 12, 12)
+                .addComponent(endDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addGap(12, 12, 12)
+                .addComponent(roomBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(timePicker1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(insertBtn)
+                    .addComponent(cancelBtn))
+                .addContainerGap())
+        );
+
+        titleField.setBackground(new java.awt.Color(153, 153, 153));
+        titleField.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        titleField.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        titleField.setText("Movie Title");
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(titleField, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, 0))
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel10Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(titleField, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(0, 0, 0))
+        );
+
+        add(jPanel10, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void insertBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBtnActionPerformed
+        // TODO add your handling code here:
+        updateShowAction();
+    }//GEN-LAST:event_insertBtnActionPerformed
+
+    private void cancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelBtnActionPerformed
+        // TODO add your handling code here:
+        dialog.dispose();
+    }//GEN-LAST:event_cancelBtnActionPerformed
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton cancelBtn;
+    private com.toedter.calendar.JDateChooser endDateChooser;
+    private javax.swing.JLabel imageLabel;
+    private javax.swing.JButton insertBtn;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JComboBox<String> roomBox;
+    private com.toedter.calendar.JDateChooser startDateChooser;
+    private com.github.lgooddatepicker.components.TimePicker timePicker1;
+    private javax.swing.JLabel titleField;
+    // End of variables declaration//GEN-END:variables
+}
