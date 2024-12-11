@@ -25,5 +25,7 @@ public interface SystemAnalysisInterface extends Remote {
     public DefaultCategoryDataset getOnlyCinemaAnalysis(int cinema_id, String[] genreList, int year, String[] monthList) throws RemoteException;
 
     public DefaultCategoryDataset getOnlyExpenseAnalysis(int cinema_id, int year, String[] monthList) throws RemoteException;
+    
+    public DefaultCategoryDataset getFeedbackAnalysis(int movie_id) throws RemoteException;
 
 }

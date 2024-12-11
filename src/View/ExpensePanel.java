@@ -130,7 +130,7 @@ public class ExpensePanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel4.setText("Type");
+        jLabel4.setText("Type :");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -147,7 +147,7 @@ public class ExpensePanel extends javax.swing.JPanel {
                 .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 129, Short.MAX_VALUE)
                 .addComponent(deleteBtn)
                 .addGap(18, 18, 18)
                 .addComponent(updateBtn)

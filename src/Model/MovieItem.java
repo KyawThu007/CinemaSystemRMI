@@ -6,6 +6,7 @@ import Controller.Service;
 import Controller.SharedData;
 import View.AddShowDialog;
 import View.EditMovieDialog;
+import View.ShowViewDialog;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -175,15 +176,18 @@ public class MovieItem extends JPanel {
         JPopupMenu popupMenu = new JPopupMenu();
 
         // Add menu items to the popup menu
+        JMenuItem viewItem = new JMenuItem("View");
         JMenuItem incomeItem = new JMenuItem("Income");
         JMenuItem editItem = new JMenuItem("Edit");
         JMenuItem deleteItem = new JMenuItem("Delete");
 
+        viewItem.addActionListener(e -> handleViewItemClick());
         incomeItem.addActionListener(e -> handleIncomeItemClick());
         editItem.addActionListener(e -> handleEditItemClick());
         deleteItem.addActionListener(e -> handleDeleteItemClick());
 
         if (control.equals("Manage")) {
+            popupMenu.add(viewItem);
             popupMenu.add(incomeItem);
             popupMenu.add(editItem);
             popupMenu.add(deleteItem);
@@ -221,6 +225,10 @@ public class MovieItem extends JPanel {
     private void handleTrailerClick() {
         openInBrowser(movie.getTrailer_url());
     }
+    
+    private void handleViewItemClick(){
+        viewAction();
+    }
 
     private void handleIncomeItemClick() {
         incomeAction();
@@ -228,6 +236,20 @@ public class MovieItem extends JPanel {
 
     private void handleEditItemClick() {
         editDetailAction();
+    }
+    
+    private void viewAction(){
+        JDialog dialog = new JDialog((JFrame) null, "", true);
+        dialog.setSize(750, 500);
+        dialog.setLocationRelativeTo(null); // Center the dialog
+
+        dialog.getContentPane().add(new ShowViewDialog(dialog, movie.getId()));
+
+        // Set up custom close behavior
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        // Show the JDialog
+        dialog.setVisible(true);
     }
 
     private void incomeAction() {
