@@ -225,8 +225,8 @@ public class MovieItem extends JPanel {
     private void handleTrailerClick() {
         openInBrowser(movie.getTrailer_url());
     }
-    
-    private void handleViewItemClick(){
+
+    private void handleViewItemClick() {
         viewAction();
     }
 
@@ -237,8 +237,8 @@ public class MovieItem extends JPanel {
     private void handleEditItemClick() {
         editDetailAction();
     }
-    
-    private void viewAction(){
+
+    private void viewAction() {
         JDialog dialog = new JDialog((JFrame) null, "", true);
         dialog.setSize(750, 500);
         dialog.setLocationRelativeTo(null); // Center the dialog
