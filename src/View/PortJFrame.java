@@ -6,6 +6,8 @@ package View;
 
 import Controller.SharedData;
 import Interface.LoginInterface;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -25,6 +27,17 @@ public class PortJFrame extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setResizable(false);
+        // Add a KeyListener to detect key presses on the text field
+        portLabel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // Check if the key pressed is Enter
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+
+                    connect();
+                }
+            }
+        });
     }
 
     /**
@@ -80,7 +93,13 @@ public class PortJFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        connect();
+    }//GEN-LAST:event_jButton1ActionPerformed
+    public void logMessage(String log) {
+        JOptionPane.showMessageDialog(null, log, "Connection Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void connect() {
         if (portLabel.getText().isEmpty()) {
             logMessage("Enter your port!");
         } else {
@@ -97,10 +116,6 @@ public class PortJFrame extends javax.swing.JFrame {
                 logMessage("Enter a number!");
             }
         }
-
-    }//GEN-LAST:event_jButton1ActionPerformed
-    public void logMessage(String log) {
-        JOptionPane.showMessageDialog(null, log, "Connection Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**

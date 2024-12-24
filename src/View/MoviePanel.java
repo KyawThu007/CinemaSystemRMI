@@ -9,6 +9,7 @@ import Model.Movie;
 import Model.MovieItem;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -183,63 +184,64 @@ public class MoviePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_refreshBtnActionPerformed
 
     private void search() {
-        try{
-        List<Movie> list = new ArrayList<>();
-        String type = typeBox.getItemAt(typeBox.getSelectedIndex());
-        for (Movie movie : new Service().getMovieStub().getAllMovie()) {
-            switch (type) {
-                case "Title":
-                    if (movie.getTitle().toLowerCase().contains(searchField.getText().toLowerCase())) {
-                        list.add(movie);
-                    }
-                    break;
-                case "Genre":
-                    if (movie.getGenre().toLowerCase().contains(searchField.getText().toLowerCase())) {
-                        list.add(movie);
-                    }
-                    break;
-                case "Director":
-                    if (movie.getDirector().toLowerCase().contains(searchField.getText().toLowerCase())) {
-                        list.add(movie);
-                    }
-                    break;
-                case "Cast":
-                    if (movie.getCast().toLowerCase().contains(searchField.getText().toLowerCase())) {
-                        list.add(movie);
-                    }
-                    break;
+        try {
+            List<Movie> list = new ArrayList<>();
+            String type = typeBox.getItemAt(typeBox.getSelectedIndex());
+            for (Movie movie : new Service().getMovieStub().getAllMovie()) {
+                switch (type) {
+                    case "Title":
+                        if (movie.getTitle().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                            list.add(movie);
+                        }
+                        break;
+                    case "Genre":
+                        if (movie.getGenre().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                            list.add(movie);
+                        }
+                        break;
+                    case "Director":
+                        if (movie.getDirector().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                            list.add(movie);
+                        }
+                        break;
+                    case "Cast":
+                        if (movie.getCast().toLowerCase().contains(searchField.getText().toLowerCase())) {
+                            list.add(movie);
+                        }
+                        break;
+                }
             }
-        }
-        //moviePanel.setLayout(new BorderLayout());
-        JPanel cardPanel = new JPanel();
-        int numColumns = 2;
-        int numRows = (int) Math.ceil((double) list.size() / numColumns);
-        int count = 0;
-        int ans = ((int) list.size() % numColumns);
-        if (ans != 0) {
-            count = numColumns - ans;
-        }
+            //moviePanel.setLayout(new BorderLayout());
+            JPanel cardPanel = new JPanel();
+            int numColumns = 2;
+            int numRows = (int) Math.ceil((double) list.size() / numColumns);
+            int count = 0;
+            int ans = ((int) list.size() % numColumns);
+            if (ans != 0) {
+                count = numColumns - ans;
+            }
 
-        cardPanel.setLayout(new GridLayout(numRows, numColumns, 10, 10)); // GridLayout to display cards vertically
-        for (Movie movie : list) {
-            cardPanel.add(new MovieItem(movie));
-        }
-        for (int i = 0; i < count; i++) {
-            cardPanel.add(new JLabel());
+            cardPanel.setLayout(new GridLayout(numRows, numColumns, 10, 10)); // GridLayout to display cards vertically
+            for (Movie movie : list) {
+                cardPanel.add(new MovieItem(movie));
+            }
+            for (int i = 0; i < count; i++) {
+                cardPanel.add(new JLabel());
 
-        }
-        JScrollPane scrollPane = new JScrollPane(cardPanel);
-        if (numRows < 2) {
+            }
+            JScrollPane scrollPane = new JScrollPane(cardPanel);
+            if (numRows < 2) {
 
-        } else {
-            scrollPane.setPreferredSize(new Dimension(1130, 520));
+            } else {
+                scrollPane.setPreferredSize(new Dimension(1130, 520));
+            }
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+            moviePanel.removeAll(); // Clear existing components
+            moviePanel.add(scrollPane);
+            moviePanel.revalidate(); // Refresh layout
+            moviePanel.repaint(); // Redraw panel
+        } catch (RemoteException e) {
         }
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        moviePanel.removeAll(); // Clear existing components
-        moviePanel.add(scrollPane);
-        moviePanel.revalidate(); // Refresh layout
-        moviePanel.repaint(); // Redraw panel
-        }catch(RemoteException e){}
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -257,9 +259,11 @@ public class MoviePanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     private void addMovieAction() {
-        // Create and configure the JDialog
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = (int) screenSize.getWidth();
+        int height = (int) screenSize.getHeight();
         JDialog dialog = new JDialog((JFrame) null, "", true);
-        dialog.setSize(1130, 500);
+        dialog.setSize(width, height);
         dialog.setLocationRelativeTo(null); // Center the dialog
 
         dialog.getContentPane().add(new AddMovieDialog(dialog));
@@ -277,39 +281,40 @@ public class MoviePanel extends javax.swing.JPanel {
      * @return
      */
     private void getAllMovieAction() {
-        try{
-        JPanel cardPanel = new JPanel();
-        List<Movie> list = new Service().getMovieStub().getAllMovie();
-        int numColumns = 2;
-        int numRows = (int) Math.ceil((double) list.size() / numColumns);
+        try {
+            JPanel cardPanel = new JPanel();
+            List<Movie> list = new Service().getMovieStub().getAllMovie();
+            int numColumns = 2;
+            int numRows = (int) Math.ceil((double) list.size() / numColumns);
 
-        int count = 0;
-        int ans = ((int) list.size() % numColumns);
-        if (ans != 0) {
-            count = numColumns - ans;
+            int count = 0;
+            int ans = ((int) list.size() % numColumns);
+            if (ans != 0) {
+                count = numColumns - ans;
+            }
+
+            cardPanel.setLayout(new GridLayout(numRows, numColumns, 15, 15)); // GridLayout to display cards vertically
+            for (Movie movie : list) {
+                cardPanel.add(new MovieItem(movie));
+
+            }
+            for (int i = 0; i < count; i++) {
+                cardPanel.add(new JLabel());
+            }
+
+            JScrollPane scrollPane = new JScrollPane(cardPanel);
+            if (numRows < 2) {
+
+            } else {
+                scrollPane.setPreferredSize(new Dimension(1130, 520));
+            }
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+            moviePanel.removeAll(); // Clear existing components
+            moviePanel.add(scrollPane);
+            moviePanel.revalidate(); // Refresh layout
+            moviePanel.repaint(); // Redraw panel
+        } catch (RemoteException e) {
         }
-
-        cardPanel.setLayout(new GridLayout(numRows, numColumns, 15, 15)); // GridLayout to display cards vertically
-        for (Movie movie : list) {
-            cardPanel.add(new MovieItem(movie));
-
-        }
-        for (int i = 0; i < count; i++) {
-            cardPanel.add(new JLabel());
-        }
-
-        JScrollPane scrollPane = new JScrollPane(cardPanel);
-        if (numRows < 2) {
-
-        } else {
-            scrollPane.setPreferredSize(new Dimension(1130, 520));
-        }
-        scrollPane.setBorder(BorderFactory.createEmptyBorder());
-
-        moviePanel.removeAll(); // Clear existing components
-        moviePanel.add(scrollPane);
-        moviePanel.revalidate(); // Refresh layout
-        moviePanel.repaint(); // Redraw panel
-        }catch(RemoteException e){}
     }
 }

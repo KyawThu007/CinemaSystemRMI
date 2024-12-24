@@ -4,7 +4,6 @@
  */
 package cinemamanager;
 
-import View.LoginForm;
 import View.PortJFrame;
 
 /**
